@@ -1,11 +1,9 @@
 package com.ashwin.android.livedatademo;
 
-import android.app.Application;
-import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -20,6 +18,7 @@ public class MyViewModel extends ViewModel {
 
     public MyViewModel() {
         super();
+        Log.w("livedata-demo", "main-viewmodel: constructor");
     }
 
     public LiveData<List<String>> getMyLiveData() {
@@ -46,7 +45,11 @@ public class MyViewModel extends ViewModel {
 
                 Collections.shuffle(myList, new Random(seed));
 
-                myLiveData.setValue(myList);
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    myLiveData.setValue(myList);
+                } else {
+                    myLiveData.postValue(myList);
+                }
             }
         }, 5000);
     }
